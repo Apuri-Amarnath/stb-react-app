@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useFirebase } from "../firebase";
+import { useFirebase } from "../../context/firebase";
 import { Link } from "react-router-dom";
 
 const AdminRegister = () => {

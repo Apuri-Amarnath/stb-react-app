@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useFirebase } from "../firebase";
+import { useFirebase } from "../../context/firebase";
 
 const TeacherList = () => {
   const { getData } = useFirebase();

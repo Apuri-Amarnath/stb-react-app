@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import AdminLogin from "../Admin/Adminlogin";
-import firebaseAuth from '../firebase'
+import firebaseAuth from '../../context/firebase'
 import AddTeacher from "./Addteacher";
 import TeacherList from "./UpdateTeacher";
 

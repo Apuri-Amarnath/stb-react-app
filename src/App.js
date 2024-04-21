@@ -8,9 +8,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import RegisterPage from "./pages/register";
 import LoginPage from "./pages/login";
 import Home from "./components/Home";
-import Adminlogin from "./components/Admin/Adminlogin";
-import AdminRegister from "./components/Admin/AdminRegister";
-import AdminDashboard from "./components/Admin/Admindashboard";
+import AdminDashboard from "./pages/Admin/admin";
+import AddTeacher from "./pages/Admin/addteacher";
 
 function App() {
   return (
@@ -22,6 +21,7 @@ function App() {
         <Route path="teacher/login" element={<LoginPage />} />
         <Route path="admin/register" element={<RegisterPage />} />
         <Route path="admin/dashboard" element={<AdminDashboard />} />
+        <Route path="admin/addteacher" element={<AddTeacher />} />
         <Route path="student/dashboard" element={<AdminDashboard />} />
         <Route path="teacher/dashboard" element={<AdminDashboard />} />
       </Routes>

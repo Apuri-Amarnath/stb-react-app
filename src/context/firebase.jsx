@@ -12,6 +12,9 @@ import {
   addDoc,
   getDoc,
   doc,
+  query,
+  where,
+  getDocs,
 } from "firebase/firestore";
 import { getDatabase, ref, set, get, remove, update } from "firebase/database";
 
@@ -82,6 +85,24 @@ export const Firebaseprovider = (props) => {
     return update(dataRef, newData);
   };
 
+  const getUserDataByEmail = async (email) => {
+    try {
+      const userRef = collection(firestore, "users");
+      const q = query(userRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        const userData = querySnapshot.docs[0].data();
+        return userData;
+      } else {
+        throw new Error("User not found");
+      }
+    } catch (error) {
+      console.error("Error getting user data:", error);
+      throw error;
+    }
+  };
+
   const getUserData = async (docId) => {
     try {
       // Create a reference to the document using its ID
@@ -111,6 +132,7 @@ export const Firebaseprovider = (props) => {
         isLoggedIn,
         handleUserCreation,
         getUserData,
+        getUserDataByEmail,
         putData,
         getData,
         deleteData,

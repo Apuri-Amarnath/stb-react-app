@@ -1,59 +1,54 @@
 import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useFirebase } from "../context/firebase";
-import { useLocation } from "react-router-dom";
 
 const LoginPage = () => {
   const firebase = useFirebase();
-  const location = useLocation();
-
+  const navigate = useNavigate();
   console.log(firebase);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isStudent, setIsStudent] = useState(false);
-  const [isTeacher, setIsTeacher] = useState(false);
-  const [redirectTo, setRedirectTo] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (firebase.isLoggedIn) {
-      const isAdminLogin = location.pathname === "/admin/login";
-      const isStudentLogin = location.pathname === "/student/login";
-      const isTeacherLogin = location.pathname === "/teacher/login";
-      setIsAdmin(isAdminLogin);
-      setIsStudent(isStudentLogin);
-      setIsTeacher(isTeacherLogin);
-    }
-  }, [location, firebase]);
+    const fetchData = async () => {
+      try {
+        if (email) {
+          console.log("Fetching user data..");
+          const userData = await firebase.getUserDataByEmail(email);
+          // console.log(userData);
+          setUserData(userData);
+        }
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchData();
+  }, [email, firebase]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log("Login in User..");
-      const result = await firebase.loginUserwithEmailandPassword(
-        email,
-        password
-      );
-      const user = result.user;
-      console.log(user.isAdmin);
-
-      if (user) {
-        setIsAdmin(location.pathname === "/admin/login" && user.isAdmin);
-        setIsStudent(location.pathname === "/student/login" && user.isStudent);
-        setIsTeacher(location.pathname === "/teacher/login" && user.isTeacher);
-
-        if (isAdmin && user.isAdmin) {
-          setRedirectTo("/admin/dashboard");
-        } else if (isStudent && user.isStudent) {
-          setRedirectTo("/student/dashboard");
-        } else if (isTeacher && user.isTeacher) {
-          setRedirectTo("/teacher/dashboard");
+      console.log("Logging in User..");
+      await firebase.loginUserwithEmailandPassword(email, password);
+      const userDatabyemail = await firebase.getUserDataByEmail(email);
+      // console.log("data fetched", userDatabyemail);
+      // Assuming firebase.isLoggedIn is correctly updated
+      if (firebase.isLoggedIn) {
+        if (userDatabyemail.isAdmin) {
+          navigate("/admin/dashboard");
+        } else if (userDatabyemail.isStudent) {
+          navigate("/student/dashboard");
+        } else if (userDatabyemail.isTeacher) {
+          navigate("/teacher/dashboard");
         } else {
-          throw new Error("Invalid user role for this login page");
+          setError("User role not found");
+          // Optionally, you can navigate to a default route or show an error message
         }
       }
     } catch (error) {
@@ -61,18 +56,6 @@ const LoginPage = () => {
     }
   };
 
-  if (redirectTo) {
-    return <Navigate to={redirectTo} />;
-  }
-  if (firebase.isLoggedIn) {
-    if (isAdmin) {
-      return <Navigate to="/admin/dashboard" />;
-    } else if (isStudent) {
-      return <Navigate to="/student/dashboard" />;
-    } else if (isTeacher) {
-      return <Navigate to="/teacher/dashboard" />;
-    }
-  }
   return (
     <div className="container mt-5">
       <Form onSubmit={handleSubmit}>

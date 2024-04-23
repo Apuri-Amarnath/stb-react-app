@@ -7,11 +7,11 @@ const Adminnavbar = () => {
   return (
     <Navbar bg="dark" data-bs-theme="dark">
       <Container>
-        <Navbar.Brand href="admin/dashboard">Navbar</Navbar.Brand>
+        <Navbar.Brand href="/admin/dashboard">Navbar</Navbar.Brand>
         <Nav className="me-auto">
-          <Nav.Link href="admin/dashboard">Home</Nav.Link>
-          <Nav.Link href="admin/addteacher">addteacher</Nav.Link>
-          <Nav.Link href="">updateteacher</Nav.Link>
+          <Nav.Link href="/admin/dashboard">Home</Nav.Link>
+          <Nav.Link href="/admin/addteacher">addteacher</Nav.Link>
+          <Nav.Link href="/admin/update-teacher">updateteacher</Nav.Link>
         </Nav>
       </Container>
     </Navbar>

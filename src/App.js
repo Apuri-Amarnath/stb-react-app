@@ -10,6 +10,7 @@ import LoginPage from "./pages/login";
 import Home from "./components/Home";
 import AdminDashboard from "./pages/Admin/admin";
 import AddTeacher from "./pages/Admin/addteacher";
+import UpdateTeacher from "./pages/Admin/updateteacher";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="admin/register" element={<RegisterPage />} />
         <Route path="admin/dashboard" element={<AdminDashboard />} />
         <Route path="admin/addteacher" element={<AddTeacher />} />
+        <Route path="admin/update-teacher" element={<UpdateTeacher />} />
         <Route path="student/dashboard" element={<AdminDashboard />} />
         <Route path="teacher/dashboard" element={<AdminDashboard />} />
       </Routes>

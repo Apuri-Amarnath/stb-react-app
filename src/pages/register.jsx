@@ -16,6 +16,9 @@ const RegisterPage = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isStudent, setIsStudent] = useState(false);
   const [isTeacher, setIsTeacher] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [messageClassName, setMessageClassName] = useState("");
+
   const isLoggedIn = firebase.isLoggedIn;
 
   useEffect(() => {
@@ -27,39 +30,57 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup User..");
     try {
-      // Sign up the user with email and password
-      const result = await firebase.signupUserWithEmailAndPassword(
-        email,
-        password
-      );
-      console.log(result);
+      console.log("Signup User..");
+      const duplicate = await firebase.getUserDataByEmail(email, "users");
+      console.log(duplicate);
+      //eliminate duplicate registrations
+      if (duplicate) {
+        setSuccessMessage("User already exists try again");
+        setMessageClassName("alert alert-warning");
+      } else {
+        // Sign up the user with email and password
+        const result = await firebase.signupUserWithEmailAndPassword(
+          email,
+          password
+        );
+        console.log(result);
+        // Store user data in Firestore
+        const docid = await firebase.handleUserCreation(
+          email,
+          isAdmin,
+          isStudent,
+          isTeacher
+        );
 
-      // Store user data in Firestore
-      const docid = await firebase.handleUserCreation(
-        email,
-        isAdmin,
-        isStudent,
-        isTeacher
-      );
+        console.log("Signup success..");
 
-      console.log("Signup success..");
+        const userData = await firebase.getUserDatafromstore(docid, "users");
 
-      const userData = await firebase.getUserData(docid);
-      console.log("Retrieved user data:", userData);
+        if (userData) {
+          setEmail("");
+          setPassword("");
+          setSuccessMessage("User added successfully");
+          setMessageClassName("alert alert-success");
+          setTimeout(() => {
+            setSuccessMessage("");
+          }, 3000);
+        }
+        console.log("Retrieved user data:", userData);
 
-      let destination = "/";
-      if (userData.isAdmin) {
-        destination = "/admin/dashboard";
-      } else if (userData.isStudent) {
-        destination = "/student/dashboard";
-      } else if (userData.isTeacher) {
-        destination = "/teacher/dashboard";
+        //redirecting with the data from store
+        let destination = "/";
+        if (userData.isAdmin) {
+          destination = "/admin/dashboard";
+        } else if (userData.isStudent) {
+          destination = "/student/dashboard";
+        } else if (userData.isTeacher) {
+          destination = "/teacher/dashboard";
+        }
+
+        // Navigate to the appropriate dashboard
+        navigate(destination);
       }
-
-      // Navigate to the appropriate dashboard
-      navigate(destination);
     } catch (error) {
       console.error("Error signing up:", error.message);
     }
@@ -77,6 +98,9 @@ const RegisterPage = () => {
   //}
   return (
     <div className="container mt-5">
+      {successMessage && (
+        <div className={messageClassName}>{successMessage}</div>
+      )}
       <Form onSubmit={handleSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>

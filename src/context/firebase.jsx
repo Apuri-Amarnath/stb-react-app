@@ -66,6 +66,22 @@ export const Firebaseprovider = (props) => {
     return docId;
   };
 
+  const handleTeacherCreation = async (
+    email,
+    username,
+    department,
+    subject
+  ) => {
+    const docRef = await addDoc(collection(firestore, "teachers"), {
+      email,
+      username,
+      department,
+      subject,
+    });
+    const docId = docRef.id;
+    return docId;
+  };
+
   const isLoggedIn = user ? true : false;
 
   const putData = (key, data) => set(ref(database, key), data);
@@ -85,9 +101,9 @@ export const Firebaseprovider = (props) => {
     return update(dataRef, newData);
   };
 
-  const getUserDataByEmail = async (email) => {
+  const getUserDataByEmail = async (email, path) => {
     try {
-      const userRef = collection(firestore, "users");
+      const userRef = collection(firestore, path);
       const q = query(userRef, where("email", "==", email));
       const querySnapshot = await getDocs(q);
 
@@ -95,7 +111,7 @@ export const Firebaseprovider = (props) => {
         const userData = querySnapshot.docs[0].data();
         return userData;
       } else {
-        throw new Error("User not found");
+        return false;
       }
     } catch (error) {
       console.error("Error getting user data:", error);
@@ -103,10 +119,10 @@ export const Firebaseprovider = (props) => {
     }
   };
 
-  const getUserData = async (docId) => {
+  const getUserDatafromstore = async (docId, path) => {
     try {
       // Create a reference to the document using its ID
-      const docRef = doc(firestore, "users", docId);
+      const docRef = doc(firestore, path, docId);
 
       const docSnapshot = await getDoc(docRef);
 
@@ -131,8 +147,9 @@ export const Firebaseprovider = (props) => {
         loginUserwithEmailandPassword,
         isLoggedIn,
         handleUserCreation,
-        getUserData,
+        getUserDatafromstore,
         getUserDataByEmail,
+        handleTeacherCreation,
         putData,
         getData,
         deleteData,

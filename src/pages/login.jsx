@@ -36,7 +36,7 @@ const LoginPage = () => {
     try {
       console.log("Logging in User..");
       await firebase.loginUserwithEmailandPassword(email, password);
-      const userDatabyemail = await firebase.getUserDataByEmail(email);
+      const userDatabyemail = await firebase.getUserDataByEmail(email,"users");
       // console.log("data fetched", userDatabyemail);
       // Assuming firebase.isLoggedIn is correctly updated
       if (firebase.isLoggedIn) {

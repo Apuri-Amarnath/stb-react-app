@@ -14,12 +14,13 @@ const LoginPage = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         if (email) {
           console.log("Fetching user data..");
-          const userData = await firebase.getUserDataByEmail(email);
+          const userData = await firebase.getUserDataByEmail(email,"users");
           // console.log(userData);
           setUserData(userData);
         }

@@ -15,8 +15,9 @@ import {
   query,
   where,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
-import { getDatabase, ref, set, get, remove, update } from "firebase/database";
+import { getDatabase, ref, set, remove } from "firebase/database";
 
 const FirebaseContext = createContext(null);
 
@@ -84,23 +85,6 @@ export const Firebaseprovider = (props) => {
 
   const isLoggedIn = user ? true : false;
 
-  const putData = (key, data) => set(ref(database, key), data);
-
-  const getData = (path) => {
-    const dataRef = ref(database, path);
-    return get(dataRef);
-  };
-
-  const deleteData = (path) => {
-    const dataRef = ref(database, path);
-    return remove(dataRef);
-  };
-
-  const updateData = (path, newData) => {
-    const dataRef = ref(database, path);
-    return update(dataRef, newData);
-  };
-
   const getUserDataByEmail = async (email, path) => {
     try {
       const userRef = collection(firestore, path);
@@ -139,6 +123,38 @@ export const Firebaseprovider = (props) => {
       throw error;
     }
   };
+  //get whole document
+  const getData = async (collectionPath) => {
+    try {
+      const collectionRef = collection(firestore, collectionPath);
+      const querySnapshot = await getDocs(collectionRef);
+
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+
+      return data;
+    } catch (error) {
+      console.error("Error getting documents:", error);
+      throw error;
+    }
+  };
+
+  //updateTeacher
+  const updateTeacherData = async (
+    id,
+    { username: name, department, subject }
+  ) => {
+    try {
+      const teacherRef = doc(firestore, "teachers", id);
+      await updateDoc(teacherRef, { username: name, department, subject });
+      console.log("Teacher data updated successfully");
+    } catch (error) {
+      console.error("Error updating teacher data:", error);
+      throw error;
+    }
+  };
 
   return (
     <FirebaseContext.Provider
@@ -150,10 +166,8 @@ export const Firebaseprovider = (props) => {
         getUserDatafromstore,
         getUserDataByEmail,
         handleTeacherCreation,
-        putData,
+        updateTeacherData,
         getData,
-        deleteData,
-        updateData,
       }}
     >
       {props.children}
